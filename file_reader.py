@@ -1,19 +1,24 @@
-import gzip
-import numpy as np
+from sklearn.datasets import fetch_openml
 import matplotlib.pyplot as plt
+import numpy as np
 
-f = gzip.open('resources/train-images-idx3-ubyte.gz','r')
+def getMnistData(verbose=False):
+    # importar o conjunto de dados MNIST
+    data, labels = fetch_openml('mnist_784', version=1, data_home = './resources', return_X_y=True, as_frame=False)
+    #dataset = fetch_openml("MNIST Original", data_home='./resources')
+    #(data, labels) = (dataset.data, dataset.target)
 
-# Tamanho padrão definido no dataset
-image_size = 28
-num_images = 5
+    if (verbose):
+        # Exibir algumas informações do dataset MNIST
+        print("[INFO] Número de imagens: {}".format(data.shape[0]))
+        print("[INFO] Pixels por imagem: {}".format(data.shape[1]))
 
+        # escolher um índice aleatório do dataset e exibir
+        # a imagem e label correspondente
+        np.random.seed(17)
+        randomIndex = np.random.randint(0, data.shape[0])
+        print("[INFO] Imagem aleatória do MNIST com label " + (labels[randomIndex]) + ':')
+        plt.imshow(data[randomIndex].reshape((28,28)), cmap="Greys")
+        plt.show()
 
-f.read(16)
-buf = f.read(image_size * image_size * num_images)
-data = np.frombuffer(buf, dtype=np.uint8).astype(np.float32)
-data = data.reshape(num_images, image_size, image_size, 1)
-
-image = np.asarray(data[2]).squeeze()
-plt.imshow(image)
-plt.show()
+    return data, labels 
